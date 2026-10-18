@@ -1,3 +1,3 @@
 
 window.OFFICE_BUS_SUPABASE_URL = "https://tjwfkpwbtdkrlilcoewi.supabase.co";
-window.OFFICE_BUS_SUPABASE_ANON_KEY = "PASTE_YOUR_EXISTING_ANON_KEY_HERE";
+window.OFFICE_BUS_SUPABASE_ANON_KEY = "sb_publishable_F3EZeD03xa1Z6gjTPWi1YQ_KF0JtbQi";
