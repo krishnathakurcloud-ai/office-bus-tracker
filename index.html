@@ -46,5 +46,6 @@ async function load(){if(!client){status("Waiting for Supabase configuration.");
 function choose(x){selectedBus=x;render()}function demo(){alert("Demo only. Real GPS proximity validation will be connected after secure authentication is configured.")}
 document.querySelectorAll(".tabs button").forEach(x=>x.onclick=()=>{role=x.dataset.role;document.querySelectorAll(".tabs button").forEach(y=>y.classList.remove("active"));x.classList.add("active");render()});
 if(C.url&&C.key){client=supabase.createClient(C.url,C.key,{auth:{persistSession:true,autoRefreshToken:true}});load();client.channel("bus-location-live").on("postgres_changes",{event:"*",schema:"public",table:"bus_locations"},load).subscribe()}else{status("Waiting for Supabase configuration.");render()}
+setInterval(load, 15000);
 </script></body></html>
 setInterval(load, 15000);
