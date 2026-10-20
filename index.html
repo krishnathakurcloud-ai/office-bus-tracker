@@ -1,51 +1,282 @@
+
 <!doctype html>
-<html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Office Bus Tracker</title>
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
 <style>
-body{margin:0;background:#f3f6fa;color:#172536;font:15px system-ui}header{background:#123b5d;color:#fff;padding:15px}main{max-width:1050px;margin:auto;padding:12px}
-.demo{background:#fff3cd;border:1px solid #e5c35b;padding:12px;border-radius:10px}.tabs,.buses{display:flex;gap:7px;overflow:auto;margin:10px 0}
-button{padding:10px 12px;border:1px solid #ccd6e0;border-radius:9px;background:white;font-weight:650}.active{background:#1769e0!important;color:white}
-.grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}.card{background:white;border:1px solid #e1e8ef;border-radius:14px;padding:14px;margin-top:12px}.metric strong{display:block;font-size:30px}.green{color:#138a52}.red{color:#c52f3d}
-table{width:100%;border-collapse:collapse;min-width:620px}th,td{text-align:left;padding:10px 7px;border-bottom:1px solid #e1e8ef}.scroll{overflow:auto}.status{width:40px;height:40px;border-radius:50%;color:#fff;border:0;font-size:20px}.yes{background:#138a52}.no{background:#c52f3d}
-#map{height:360px;border-radius:12px}.pill{font-size:12px;background:#edf2f7;border-radius:99px;padding:3px 8px}.small{font-size:12px;color:#667}
+body{margin:0;background:#f3f6fa;color:#172536;font:15px system-ui}
+header{background:#123b5d;color:#fff;padding:15px}
+main{max-width:1050px;margin:auto;padding:12px}
+.demo{background:#fff3cd;border:1px solid #e5c35b;padding:12px;border-radius:10px}
+.tabs,.buses{display:flex;gap:7px;overflow:auto;margin:10px 0}
+button{padding:10px 12px;border:1px solid #ccd6e0;border-radius:9px;background:white;font-weight:650}
+.active{background:#1769e0!important;color:white}
+.grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
+.card{background:white;border:1px solid #e1e8ef;border-radius:14px;padding:14px;margin-top:12px}
+.metric strong{display:block;font-size:30px}
+.green{color:#138a52}.red{color:#c52f3d}
+table{width:100%;border-collapse:collapse;min-width:620px}
+th,td{text-align:left;padding:10px 7px;border-bottom:1px solid #e1e8ef}
+.scroll{overflow:auto}
+.status{width:40px;height:40px;border-radius:50%;color:#fff;border:0;font-size:20px}
+.yes{background:#138a52}.no{background:#c52f3d}
+#map{height:360px;width:100%;border-radius:12px;background:#e5eaf0}
+.pill{font-size:12px;background:#edf2f7;border-radius:99px;padding:3px 8px}
+.small{font-size:12px;color:#667}
 @media(max-width:700px){.grid{grid-template-columns:1fr 1fr}.grid .metric:first-child{grid-column:span 2}}
-</style></head>
-<body><header><h1>🚌 Office Bus Tracker</h1><div>Supabase-connected interactive prototype</div></header><main>
-<div class="demo"><b>⚠️ PROTOTYPE MODE:</b> Supabase database reads and live-location subscriptions are enabled when configured. Login, real GPS, and real attendance are NOT connected.</div>
-<div class="tabs"><button class="active" data-role="employee">👤 Employee</button><button data-role="driver">🚍 Driver</button><button data-role="coordinator">📋 Coordinator</button><button data-role="admin">⚙️ Admin</button></div>
-<div id="status" class="card"></div><div id="app"></div></main>
+</style>
+</head>
+<body>
+<header>
+<h1>🚌 Office Bus Tracker</h1>
+<div>Supabase-connected interactive prototype</div>
+</header>
+<main>
+<div class="demo">
+<b>⚠️ PROTOTYPE MODE:</b>
+Supabase database reads and location-change subscriptions are enabled when configured.
+Login, real GPS transmission, and real attendance verification are NOT connected.
+</div>
+
+<div class="tabs">
+<button class="active" data-role="employee">👤 Employee</button>
+<button data-role="driver">🚍 Driver</button>
+<button data-role="coordinator">📋 Coordinator</button>
+<button data-role="admin">⚙️ Admin</button>
+</div>
+
+<div id="status" class="card"></div>
+<div id="app"></div>
+</main>
+
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="config.js"></script>
 <script>
-let client=null,role="employee",selectedBus=null,map=null,markers={},rows=[];
-const C={url:window.OFFICE_BUS_SUPABASE_URL||"",key:window.OFFICE_BUS_SUPABASE_ANON_KEY||""};
-const esc=s=>String(s??"").replace(/[&<>"']/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[m]));
-function status(t,ok=false){document.getElementById("status").innerHTML=`<b>${ok?"🟢":"🔵"} ${esc(t)}</b><div class="small">${C.url?"Supabase configured":"Add public Supabase URL and anon/publishable key in config.js"}</div>`}
-function sel(){return rows.find(x=>x.bus_id===selectedBus)||rows[0]}
-function render(){
- let b=sel();
-let total=+(b?.assigned_count||0),board=+(b?.boarded_count||0),miss=+(b?.not_boarded_count||0);
- let h=`<div class="grid"><div class="card metric"><small>Assigned</small><strong>${total}</strong></div><div class="card metric"><small>Boarded ✓</small><strong class="green">${board}</strong></div><div class="card metric"><small>Not boarded</small><strong class="red">${miss}</strong></div></div>`;
- h+=`<div class="card"><b>Select Bus</b><div class="buses">${rows.map(x=>`<button class="${x.bus_id===selectedBus?"active":""}" onclick="choose('${x.bus_id}')">${esc(x.bus_number)}</button>`).join("")}</div>${b?esc(b.route_name||""):""}</div>`;
- h+=`<div class="card"><h2>🗺️ Live Bus Map</h2><div id="map"></div><p class="small">Markers come from public.bus_locations. No device GPS is collected by this prototype.</p></div>`;
- if(role==="employee")h+=`<div class="card"><h2>👤 Employee</h2><p>Demo employee: EMP1001 — Rahul Kumar<br>Bus: ${esc(b?.bus_number||"—")}<br>Pickup: Sainikpuri Demo Stop</p><button onclick="demo()">📍 Demo GPS check-in</button></div>`;
- if(role==="driver")h+=`<div class="card"><h2>🚍 Driver</h2><p>Assigned bus: <b>${esc(b?.bus_number||"—")}</b></p><button onclick="demo()">📡 Start phone GPS (demo)</button></div>`;
- if(role==="coordinator"||role==="admin")h+=table();
- document.getElementById("app").innerHTML=h;setTimeout(mapRender,0)
+let client=null;
+let role="employee";
+let selectedBus=null;
+let map=null;
+let markers={};
+let rows=[];
+let refreshTimer=null;
+
+const C={
+  url:window.OFFICE_BUS_SUPABASE_URL||"",
+  key:window.OFFICE_BUS_SUPABASE_ANON_KEY||""
+};
+
+const esc=s=>String(s??"").replace(/[&<>"']/g,m=>({
+  "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"
+}[m]));
+
+function status(t,ok=false){
+  document.getElementById("status").innerHTML=
+    `<b>${ok?"🟢":"🔵"} ${esc(t)}</b>
+     <div class="small">${C.url?"Supabase configured":"Add the public Supabase URL and anon/publishable key in config.js"}</div>`;
 }
-function table(){return `<div class="card"><h2>👥 Today's Boarding</h2><div class="scroll"><table><tr><th>ID</th><th>Name</th><th>Pickup</th><th>Status</th></tr>
-<tr><td>EMP1001</td><td>Rahul Kumar</td><td>Sainikpuri Demo Stop</td><td><button class="status yes">✓</button></td></tr>
-<tr><td>EMP1002</td><td>Priya Sharma</td><td>Neredmet Demo Stop</td><td><button class="status yes">✓</button></td></tr>
-<tr><td>EMP1003</td><td>Amit Reddy</td><td>Malkajgiri Demo Stop</td><td><button class="status no">✕</button></td></tr></table></div><p class="small">Attendance controls remain demo-only until authentication and final server policies are completed.</p></div>`}
-function mapRender(){if(!window.L)return;let el=document.getElementById("map");if(!el)return;if(!map){map=L.map(el).setView([17.45,78.54],11);L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",{attribution:"© OpenStreetMap contributors"}).addTo(map)}
- rows.forEach(b=>{if(b.latest_latitude==null)return;let p=[b.latest_latitude,b.latest_longitude];if(!markers[b.bus_id])markers[b.bus_id]=L.marker(p).addTo(map);markers[b.bus_id].setLatLng(p).bindPopup(`<b>${esc(b.bus_number)}</b><br>GPS: ${esc(b.gps_source||"unknown")}<br>${esc(b.gps_recorded_at||"")}`)})}
-async function load(){if(!client){status("Waiting for Supabase configuration.");render();return}let r=await client.from("bus_dashboard").select("*").order("bus_number");if(r.error){status("Database error: "+r.error.message);return}rows=r.data||[];
-                     console.log("BUS DASHBOARD DATA:", rows); if(!selectedBus&&rows[0])selectedBus=rows[0].bus_id;status(`Connected. ${rows.length} buses loaded.`,true);render()}
-function choose(x){selectedBus=x;render();if(map){setTimeout(()=>map.invalidateSize(),100)}}}function demo(){alert("Demo only. Real GPS proximity validation will be connected after secure authentication is configured.")}
-document.querySelectorAll(".tabs button").forEach(x=>x.onclick=()=>{role=x.dataset.role;document.querySelectorAll(".tabs button").forEach(y=>y.classList.remove("active"));x.classList.add("active");render()});
-if(C.url&&C.key){client=supabase.createClient(C.url,C.key,{auth:{persistSession:true,autoRefreshToken:true}});load();client.channel("bus-location-live").on("postgres_changes",{event:"*",schema:"public",table:"bus_locations"},load).subscribe()}else{status("Waiting for Supabase configuration.");render()}
-setInterval(load, 15000);
-</script></body></html>
-setInterval(load, 15000);
+
+function sel(){
+  return rows.find(x=>x.bus_id===selectedBus)||rows[0];
+}
+
+function render(){
+  let b=sel();
+  let total=+(b?.assigned_count||0);
+  let board=+(b?.boarded_count||0);
+  let miss=+(b?.not_boarded_count||0);
+
+  let h=`<div class="grid">
+    <div class="card metric"><small>Assigned</small><strong>${total}</strong></div>
+    <div class="card metric"><small>Boarded ✓</small><strong class="green">${board}</strong></div>
+    <div class="card metric"><small>Not boarded</small><strong class="red">${miss}</strong></div>
+  </div>`;
+
+  h+=`<div class="card">
+    <b>Select Bus</b>
+    <div class="buses">${rows.map(x=>`
+      <button class="${x.bus_id===selectedBus?"active":""}"
+        onclick="choose('${esc(x.bus_id)}')">${esc(x.bus_number)}</button>
+    `).join("")}</div>
+    ${esc(b?.route_name||"")}
+  </div>`;
+
+  h+=`<div class="card">
+    <h2>🗺️ Bus Location Map</h2>
+    <div id="map"></div>
+    <p class="small">Map markers use saved bus_locations records. Coordinates may be old sample data and are not necessarily live GPS.</p>
+    <p id="gps-status" class="small">Checking saved location data…</p>
+  </div>`;
+
+  if(role==="employee"){
+    h+=`<div class="card">
+      <h2>👤 Employee</h2>
+      <p>Demo employee: EMP1001 — Rahul Kumar<br>
+      Bus: ${esc(b?.bus_number||"—")}<br>
+      Pickup: Sainikpuri Demo Stop</p>
+      <button onclick="demo()">📍 Demo GPS check-in</button>
+    </div>`;
+  }
+
+  if(role==="driver"){
+    h+=`<div class="card">
+      <h2>🚍 Driver</h2>
+      <p>Assigned bus: <b>${esc(b?.bus_number||"—")}</b></p>
+      <button onclick="demo()">📡 Start phone GPS (demo)</button>
+    </div>`;
+  }
+
+  if(role==="coordinator"||role==="admin")h+=table();
+
+  document.getElementById("app").innerHTML=h;
+  setTimeout(mapRender,100);
+}
+
+function table(){
+  return `<div class="card">
+    <h2>👥 Demo Boarding Records</h2>
+    <div class="scroll"><table>
+      <tr><th>ID</th><th>Name</th><th>Pickup</th><th>Status</th></tr>
+      <tr><td>EMP1001</td><td>Rahul Kumar</td><td>Sainikpuri Demo Stop</td><td><button class="status yes">✓</button></td></tr>
+      <tr><td>EMP1002</td><td>Priya Sharma</td><td>Neredmet Demo Stop</td><td><button class="status yes">✓</button></td></tr>
+      <tr><td>EMP1003</td><td>Amit Reddy</td><td>Malkajgiri Demo Stop</td><td><button class="status no">✕</button></td></tr>
+    </table></div>
+    <p class="small">These are demonstration records, not verified real attendance.</p>
+  </div>`;
+}
+
+function mapRender(){
+  if(!window.L){
+    const gps=document.getElementById("gps-status");
+    if(gps)gps.textContent="Map library failed to load. Check your internet connection.";
+    return;
+  }
+
+  let el=document.getElementById("map");
+  if(!el)return;
+
+  if(!map){
+    map=L.map(el).setView([17.45,78.54],11);
+    L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",{
+      attribution:"© OpenStreetMap contributors",
+      maxZoom:19
+    }).addTo(map);
+  }
+
+  setTimeout(()=>map.invalidateSize(),150);
+
+  let b=sel();
+  let gps=document.getElementById("gps-status");
+
+  if(!b){
+    if(gps)gps.textContent="No bus records were returned from Supabase.";
+    return;
+  }
+
+  if(b.latest_latitude==null||b.latest_longitude==null){
+    if(gps)gps.textContent="No saved GPS coordinates are available for "+(b.bus_number||"this bus")+".";
+    return;
+  }
+
+  let p=[Number(b.latest_latitude),Number(b.latest_longitude)];
+
+  if(!Number.isFinite(p[0])||!Number.isFinite(p[1])){
+    if(gps)gps.textContent="The saved GPS coordinates are invalid.";
+    return;
+  }
+
+  if(!markers[b.bus_id]){
+    markers[b.bus_id]=L.marker(p).addTo(map);
+  }
+
+  markers[b.bus_id].setLatLng(p).bindPopup(
+    `<b>${esc(b.bus_number)}</b><br>
+    GPS source: ${esc(b.gps_source||"unknown")}<br>
+    Recorded: ${esc(b.gps_recorded_at||"time unavailable")}`
+  );
+
+  map.setView(p,13);
+
+  if(gps){
+    gps.textContent="Saved location shown for "+b.bus_number+
+      ". Last recorded: "+(b.gps_recorded_at||"time unavailable")+
+      ". This is not proof of live GPS.";
+  }
+}
+
+async function load(){
+  if(!client){
+    status("Waiting for Supabase configuration.");
+    render();
+    return;
+  }
+
+  try{
+    let r=await client.from("bus_dashboard").select("*").order("bus_number");
+
+    if(r.error){
+      status("Database error: "+r.error.message);
+      return;
+    }
+
+    rows=r.data||[];
+
+    if(!rows.some(x=>x.bus_id===selectedBus)){
+      selectedBus=rows[0]?.bus_id||null;
+    }
+
+    status(`Connected. ${rows.length} buses loaded.`,true);
+    render();
+  }catch(e){
+    status("Could not load dashboard data. Check your internet connection.");
+    console.error(e);
+  }
+}
+
+function choose(x){
+  selectedBus=x;
+  render();
+  if(map)setTimeout(()=>map.invalidateSize(),200);
+}
+
+function demo(){
+  alert("Demo only. Real GPS upload requires secure driver authentication and server-side authorization.");
+}
+
+document.querySelectorAll(".tabs button").forEach(x=>{
+  x.onclick=()=>{
+    role=x.dataset.role;
+    document.querySelectorAll(".tabs button").forEach(y=>y.classList.remove("active"));
+    x.classList.add("active");
+    render();
+  };
+});
+
+if(C.url&&C.key&&window.supabase){
+  client=supabase.createClient(C.url,C.key,{
+    auth:{persistSession:true,autoRefreshToken:true}
+  });
+
+  load();
+
+  client.channel("bus-location-live")
+    .on("postgres_changes",{
+      event:"*",
+      schema:"public",
+      table:"bus_locations"
+    },()=>load())
+    .subscribe();
+
+  if(!refreshTimer){
+    refreshTimer=setInterval(load,15000);
+  }
+}else{
+  status("Waiting for Supabase configuration.");
+  render();
+}
+</script>
+</body>
+</html>
