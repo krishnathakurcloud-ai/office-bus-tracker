@@ -25,8 +25,8 @@ const esc=s=>String(s??"").replace(/[&<>"']/g,m=>({"&":"&amp;","<":"&lt;",">":"&
 function status(t,ok=false){document.getElementById("status").innerHTML=`<b>${ok?"🟢":"🔵"} ${esc(t)}</b><div class="small">${C.url?"Supabase configured":"Add public Supabase URL and anon/publishable key in config.js"}</div>`}
 function sel(){return rows.find(x=>x.bus_id===selectedBus)||rows[0]}
 function render(){
- let total=rows.reduce((n,x)=>n+ +x.assigned_count,0),board=rows.reduce((n,x)=>n+ +x.boarded_count,0),miss=rows.reduce((n,x)=>n+ +x.not_boarded_count,0);
  let b=sel();
+let total=+(b?.assigned_count||0),board=+(b?.boarded_count||0),miss=+(b?.not_boarded_count||0);
  let h=`<div class="grid"><div class="card metric"><small>Assigned</small><strong>${total}</strong></div><div class="card metric"><small>Boarded ✓</small><strong class="green">${board}</strong></div><div class="card metric"><small>Not boarded</small><strong class="red">${miss}</strong></div></div>`;
  h+=`<div class="card"><b>Select Bus</b><div class="buses">${rows.map(x=>`<button class="${x.bus_id===selectedBus?"active":""}" onclick="choose('${x.bus_id}')">${esc(x.bus_number)}</button>`).join("")}</div>${b?esc(b.route_name||""):""}</div>`;
  h+=`<div class="card"><h2>🗺️ Live Bus Map</h2><div id="map"></div><p class="small">Markers come from public.bus_locations. No device GPS is collected by this prototype.</p></div>`;
