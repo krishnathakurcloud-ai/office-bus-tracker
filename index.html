@@ -43,7 +43,7 @@ function mapRender(){if(!window.L)return;let el=document.getElementById("map");i
  rows.forEach(b=>{if(b.latest_latitude==null)return;let p=[b.latest_latitude,b.latest_longitude];if(!markers[b.bus_id])markers[b.bus_id]=L.marker(p).addTo(map);markers[b.bus_id].setLatLng(p).bindPopup(`<b>${esc(b.bus_number)}</b><br>GPS: ${esc(b.gps_source||"unknown")}<br>${esc(b.gps_recorded_at||"")}`)})}
 async function load(){if(!client){status("Waiting for Supabase configuration.");render();return}let r=await client.from("bus_dashboard").select("*").order("bus_number");if(r.error){status("Database error: "+r.error.message);return}rows=r.data||[];
                      console.log("BUS DASHBOARD DATA:", rows); if(!selectedBus&&rows[0])selectedBus=rows[0].bus_id;status(`Connected. ${rows.length} buses loaded.`,true);render()}
-function choose(x){selectedBus=x;render()}function demo(){alert("Demo only. Real GPS proximity validation will be connected after secure authentication is configured.")}
+function choose(x){selectedBus=x;render();if(map){setTimeout(()=>map.invalidateSize(),100)}}}function demo(){alert("Demo only. Real GPS proximity validation will be connected after secure authentication is configured.")}
 document.querySelectorAll(".tabs button").forEach(x=>x.onclick=()=>{role=x.dataset.role;document.querySelectorAll(".tabs button").forEach(y=>y.classList.remove("active"));x.classList.add("active");render()});
 if(C.url&&C.key){client=supabase.createClient(C.url,C.key,{auth:{persistSession:true,autoRefreshToken:true}});load();client.channel("bus-location-live").on("postgres_changes",{event:"*",schema:"public",table:"bus_locations"},load).subscribe()}else{status("Waiting for Supabase configuration.");render()}
 setInterval(load, 15000);
