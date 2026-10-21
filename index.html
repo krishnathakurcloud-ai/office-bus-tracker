@@ -1,4 +1,4 @@
-
+```html
 <!doctype html>
 <html lang="en">
 <head>
@@ -10,73 +10,338 @@
 
 <style>
 *{box-sizing:border-box}
-body{margin:0;background:#f3f6fa;color:#172536;font:15px system-ui,sans-serif}
-header{background:#123b5d;color:white;padding:15px}
-main{max-width:1050px;margin:auto;padding:12px}
-.demo{background:#fff3cd;border:1px solid #e5c35b;padding:12px;border-radius:10px}
-.tabs,.buses{display:flex;gap:7px;overflow-x:auto;margin:10px 0}
-button{padding:10px 12px;border:1px solid #ccd6e0;border-radius:9px;background:white;font-weight:650;cursor:pointer}
-.active{background:#1769e0!important;color:white}
-.grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px}
-.card{background:white;border:1px solid #e1e8ef;border-radius:14px;padding:14px;margin-top:12px;min-width:0}
-.metric strong{display:block;font-size:30px}
-.green{color:#138a52}.red{color:#c52f3d}
-table{width:100%;border-collapse:collapse;min-width:620px}
-th,td{text-align:left;padding:10px 7px;border-bottom:1px solid #e1e8ef}
-.scroll{overflow:auto}
-.status{width:40px;height:40px;border-radius:50%;color:white;border:0;font-size:20px}
-.yes{background:#138a52}.no{background:#c52f3d}
-#map{height:360px;min-height:360px;width:100%;border-radius:12px;background:#e5eaf0;display:block}
-.small{font-size:12px;color:#667}
+
+body{
+  margin:0;
+  background:#f3f6fa;
+  color:#172536;
+  font:15px system-ui,sans-serif
+}
+
+header{
+  background:#123b5d;
+  color:white;
+  padding:15px
+}
+
+header h1{
+  margin:0 0 5px
+}
+
+main{
+  max-width:1050px;
+  margin:auto;
+  padding:12px
+}
+
+.demo{
+  background:#fff3cd;
+  border:1px solid #e5c35b;
+  padding:12px;
+  border-radius:10px
+}
+
+.tabs,.buses{
+  display:flex;
+  gap:7px;
+  overflow-x:auto;
+  margin:10px 0
+}
+
+button{
+  padding:10px 12px;
+  border:1px solid #ccd6e0;
+  border-radius:9px;
+  background:white;
+  font-weight:650;
+  cursor:pointer
+}
+
+button:disabled{
+  opacity:.6;
+  cursor:not-allowed
+}
+
+.active{
+  background:#1769e0!important;
+  color:white
+}
+
+.grid{
+  display:grid;
+  grid-template-columns:repeat(3,minmax(0,1fr));
+  gap:10px
+}
+
+.card{
+  background:white;
+  border:1px solid #e1e8ef;
+  border-radius:14px;
+  padding:14px;
+  margin-top:12px;
+  min-width:0
+}
+
+.metric strong{
+  display:block;
+  font-size:30px
+}
+
+.green{color:#138a52}
+.red{color:#c52f3d}
+
+table{
+  width:100%;
+  border-collapse:collapse;
+  min-width:620px
+}
+
+th,td{
+  text-align:left;
+  padding:10px 7px;
+  border-bottom:1px solid #e1e8ef
+}
+
+.scroll{
+  overflow:auto
+}
+
+.status{
+  width:40px;
+  height:40px;
+  border-radius:50%;
+  color:white;
+  border:0;
+  font-size:20px
+}
+
+.yes{background:#138a52}
+.no{background:#c52f3d}
+
+#map{
+  height:360px;
+  min-height:360px;
+  width:100%;
+  border-radius:12px;
+  background:#e5eaf0;
+  display:block
+}
+
+.small{
+  font-size:12px;
+  color:#667
+}
+
+.auth-input{
+  width:100%;
+  padding:12px;
+  margin:6px 0;
+  border:1px solid #ccd6e0;
+  border-radius:9px;
+  font-size:15px
+}
+
+.auth-message{
+  margin-top:10px;
+  min-height:18px
+}
+
+.admin-box{
+  border-left:4px solid #1769e0
+}
+
+.logout{
+  float:right;
+  background:#fff;
+  color:#123b5d
+}
+
+.hidden{
+  display:none!important
+}
+
+.user-info{
+  background:#eaf3ff;
+  border:1px solid #c9def7;
+  padding:10px;
+  border-radius:9px;
+  margin-top:10px
+}
+
+.role-badge{
+  display:inline-block;
+  background:#1769e0;
+  color:white;
+  padding:3px 8px;
+  border-radius:20px;
+  font-size:12px;
+  font-weight:bold
+}
+
 @media(max-width:700px){
- .grid{grid-template-columns:1fr 1fr}
- .grid .metric:first-child{grid-column:span 2}
+  .grid{
+    grid-template-columns:1fr 1fr
+  }
+
+  .grid .metric:first-child{
+    grid-column:span 2
+  }
+
+  .logout{
+    float:none;
+    margin-top:8px
+  }
 }
 </style>
 </head>
 
 <body>
+
 <header>
   <h1>🚌 Office Bus Tracker</h1>
-  <div>Supabase-connected interactive prototype</div>
+  <div>Supabase-connected office transportation system</div>
 </header>
 
 <main>
+
   <div class="demo">
     <b>⚠️ PROTOTYPE MODE:</b>
-    Supabase database reads and location-change subscriptions are enabled when configured.
-    Login, real GPS transmission and real attendance verification are NOT connected.
+    The map and Supabase dashboard are connected.
+    Real GPS transmission, real attendance verification and full production security are still being implemented.
   </div>
 
-  <div class="tabs">
-    <button class="active" data-role="employee">👤 Employee</button>
-    <button data-role="driver">🚍 Driver</button>
-    <button data-role="coordinator">📋 Coordinator</button>
-    <button data-role="admin">⚙️ Admin</button>
+  <!-- AUTHENTICATION -->
+  <div id="authBox" class="card">
+
+    <h2>🔐 Sign In</h2>
+
+    <p class="small">
+      Sign in using your approved Office Bus Tracker account.
+    </p>
+
+    <input
+      id="loginEmail"
+      class="auth-input"
+      type="email"
+      placeholder="Email address"
+      autocomplete="email"
+    >
+
+    <input
+      id="loginPassword"
+      class="auth-input"
+      type="password"
+      placeholder="Password"
+      autocomplete="current-password"
+    >
+
+    <button id="loginButton" onclick="signIn()">
+      🔑 Sign In
+    </button>
+
+    <p id="authMessage" class="auth-message small"></p>
+
   </div>
 
-  <div id="status" class="card">Connecting to Supabase…</div>
-  <div id="app"></div>
+  <!-- LOGGED-IN USER INFORMATION -->
+  <div id="userBox" class="card hidden">
+
+    <button class="logout" onclick="signOut()">
+      🚪 Sign Out
+    </button>
+
+    <b>Signed in user</b>
+
+    <div class="user-info">
+      <div id="userEmail"></div>
+      <div style="margin-top:5px">
+        Role:
+        <span id="userRole" class="role-badge">Checking...</span>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- APPLICATION -->
+  <div id="protectedApp" class="hidden">
+
+    <div class="tabs">
+
+      <button
+        class="active"
+        data-role="employee"
+        onclick="changeRoleView('employee')">
+        👤 Employee
+      </button>
+
+      <button
+        data-role="driver"
+        onclick="changeRoleView('driver')">
+        🚍 Driver
+      </button>
+
+      <button
+        data-role="coordinator"
+        onclick="changeRoleView('coordinator')">
+        📋 Coordinator
+      </button>
+
+      <button
+        data-role="admin"
+        onclick="changeRoleView('admin')">
+        ⚙️ Admin
+      </button>
+
+    </div>
+
+    <div id="status" class="card">
+      Connecting to Supabase…
+    </div>
+
+    <div id="app"></div>
+
+  </div>
+
 </main>
 
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
 <script src="config.js"></script>
 
 <script>
+
 let client=null;
+
 let role="employee";
+
+let actualUserRole=null;
+
+let currentUser=null;
+
 let selectedBus=null;
+
 let map=null;
+
 let mapElement=null;
+
 let markers={};
+
 let rows=[];
+
 let refreshTimer=null;
+
+
+/* SUPABASE CONFIGURATION */
 
 const C={
   url:window.OFFICE_BUS_SUPABASE_URL||"",
   key:window.OFFICE_BUS_SUPABASE_ANON_KEY||""
 };
+
+
+/* HTML ESCAPE */
 
 const esc=s=>String(s??"").replace(/[&<>"']/g,m=>({
   "&":"&amp;",
@@ -86,268 +351,1293 @@ const esc=s=>String(s??"").replace(/[&<>"']/g,m=>({
   "'":"&#39;"
 }[m]));
 
+
+/* STATUS MESSAGE */
+
 function status(message,ok=false){
-  document.getElementById("status").innerHTML=
+
+  const el=document.getElementById("status");
+
+  if(!el)return;
+
+  el.innerHTML=
     `<b>${ok?"🟢":"🔵"} ${esc(message)}</b>
-    <div class="small">${C.url?"Supabase configured":"Check the public Supabase URL and anon/publishable key in config.js"}</div>`;
+    <div class="small">
+      ${C.url
+        ?"Supabase configured"
+        :"Check config.js Supabase settings"}
+    </div>`;
 }
+
+
+/* SELECTED BUS */
 
 function sel(){
-  return rows.find(x=>x.bus_id===selectedBus)||rows[0]||null;
+
+  return rows.find(
+    x=>x.bus_id===selectedBus
+  )||rows[0]||null;
+
 }
 
+
+/* RENDER APPLICATION */
+
 function render(){
+
   const b=sel();
-  const total=Number(b?.assigned_count||0);
-  const boarded=Number(b?.boarded_count||0);
-  const notBoarded=Number(b?.not_boarded_count||0);
+
+  const total=Number(
+    b?.assigned_count||0
+  );
+
+  const boarded=Number(
+    b?.boarded_count||0
+  );
+
+  const notBoarded=Number(
+    b?.not_boarded_count||0
+  );
+
 
   let html=`
+
     <div class="grid">
-      <div class="card metric"><small>Assigned</small><strong>${total}</strong></div>
-      <div class="card metric"><small>Boarded ✓</small><strong class="green">${boarded}</strong></div>
-      <div class="card metric"><small>Not boarded</small><strong class="red">${notBoarded}</strong></div>
-    </div>
 
-    <div class="card">
-      <b>Select Bus</b>
-      <div class="buses">
-        ${rows.map(bus=>`
-          <button class="${bus.bus_id===selectedBus?"active":""}"
-            onclick="choose('${esc(bus.bus_id)}')">
-            ${esc(bus.bus_number)}
-          </button>
-        `).join("")}
+      <div class="card metric">
+        <small>Assigned</small>
+        <strong>${total}</strong>
       </div>
-      ${esc(b?.route_name||"")}
+
+      <div class="card metric">
+        <small>Boarded ✓</small>
+        <strong class="green">${boarded}</strong>
+      </div>
+
+      <div class="card metric">
+        <small>Not boarded</small>
+        <strong class="red">${notBoarded}</strong>
+      </div>
+
     </div>
 
+
     <div class="card">
+
+      <b>Select Bus</b>
+
+      <div class="buses">
+
+        ${rows.map(bus=>`
+
+          <button
+            class="${bus.bus_id===selectedBus?"active":""}"
+            onclick="choose('${esc(bus.bus_id)}')">
+
+            ${esc(bus.bus_number)}
+
+          </button>
+
+        `).join("")}
+
+      </div>
+
+      ${esc(b?.route_name||"")}
+
+    </div>
+
+
+    <div class="card">
+
       <h2>🗺️ Bus Location Map</h2>
+
       <div id="map"></div>
-      <p id="gps-status" class="small">Preparing map…</p>
+
+      <p id="gps-status" class="small">
+        Preparing map…
+      </p>
+
       <p class="small">
         Location data comes from saved bus_locations records.
         Old coordinates are not proof of live GPS tracking.
       </p>
+
     </div>
+
   `;
 
+
+  /* EMPLOYEE VIEW */
+
   if(role==="employee"){
+
     html+=`
+
       <div class="card">
-        <h2>👤 Employee — Demo</h2>
-        <p>Demo employee: EMP1001 — Rahul Kumar<br>
-        Bus: ${esc(b?.bus_number||"—")}<br>
-        Pickup: Sainikpuri Demo Stop</p>
-        <button onclick="demo()">📍 Demo GPS check-in</button>
-      </div>`;
+
+        <h2>👤 Employee</h2>
+
+        <p>
+          Your assigned bus:
+          <b>${esc(b?.bus_number||"—")}</b>
+        </p>
+
+        <p>
+          Pickup:
+          Sainikpuri Demo Stop
+        </p>
+
+        <button onclick="demo()">
+          📍 Demo GPS check-in
+        </button>
+
+      </div>
+
+    `;
+
   }
+
+
+  /* DRIVER VIEW */
 
   if(role==="driver"){
+
     html+=`
+
       <div class="card">
-        <h2>🚍 Driver — Demo</h2>
-        <p>Selected bus: <b>${esc(b?.bus_number||"—")}</b></p>
-        <button onclick="demo()">📡 Start phone GPS (demo)</button>
-      </div>`;
+
+        <h2>🚍 Driver</h2>
+
+        <p>
+          Assigned bus:
+          <b>${esc(b?.bus_number||"—")}</b>
+        </p>
+
+        <button onclick="demo()">
+          📡 Start Trip — Demo
+        </button>
+
+        <button onclick="demo()">
+          ⏹️ End Trip — Demo
+        </button>
+
+        <p class="small">
+          Live phone GPS will be connected in the next stage.
+        </p>
+
+      </div>
+
+    `;
+
   }
 
-  if(role==="coordinator"||role==="admin"){
+
+  /* COORDINATOR VIEW */
+
+  if(role==="coordinator"){
+
+    html+=`
+
+      <div class="card">
+
+        <h2>📋 Transport Coordinator</h2>
+
+        <p>
+          Manage daily transport operations,
+          bus assignments and pickup information.
+        </p>
+
+      </div>
+
+    `;
+
     html+=table();
+
   }
+
+
+  /* ADMIN VIEW */
+
+  if(role==="admin"){
+
+    html+=`
+
+      <div class="card admin-box">
+
+        <h2>⚙️ Admin Panel</h2>
+
+        <p>
+          <b>Administrator access verified.</b>
+        </p>
+
+        <p class="small">
+          Your account has the <b>admin</b> role in Supabase.
+        </p>
+
+        <div class="grid">
+
+          <div class="card">
+
+            <h3>👥 Users</h3>
+
+            <p>
+              Create and manage employees,
+              drivers and coordinators.
+            </p>
+
+            <button onclick="adminMessage('User Management')">
+              Manage Users
+            </button>
+
+          </div>
+
+
+          <div class="card">
+
+            <h3>🚌 Buses</h3>
+
+            <p>
+              Manage buses and assignments.
+            </p>
+
+            <button onclick="adminMessage('Bus Management')">
+              Manage Buses
+            </button>
+
+          </div>
+
+
+          <div class="card">
+
+            <h3>🚏 Routes</h3>
+
+            <p>
+              Manage routes and pickup points.
+            </p>
+
+            <button onclick="adminMessage('Route Management')">
+              Manage Routes
+            </button>
+
+          </div>
+
+        </div>
+
+      </div>
+
+    `;
+
+    html+=table();
+
+  }
+
 
   document.getElementById("app").innerHTML=html;
 
-  // render() replaces the map element. Rebuild Leaflet for that new element.
+
+  /*
+    render() replaces the map element.
+    Therefore Leaflet must be attached to the new element.
+  */
+
   setTimeout(mapRender,100);
+
 }
+
+
+/* DEMO TABLE */
 
 function table(){
+
   return `
+
     <div class="card">
-      <h2>👥 Demo Boarding Records</h2>
+
+      <h2>👥 Boarding Records</h2>
+
       <div class="scroll">
+
         <table>
-          <tr><th>ID</th><th>Name</th><th>Pickup</th><th>Status</th></tr>
-          <tr><td>EMP1001</td><td>Rahul Kumar</td><td>Sainikpuri Demo Stop</td><td><button class="status yes">✓</button></td></tr>
-          <tr><td>EMP1002</td><td>Priya Sharma</td><td>Neredmet Demo Stop</td><td><button class="status yes">✓</button></td></tr>
-          <tr><td>EMP1003</td><td>Amit Reddy</td><td>Malkajgiri Demo Stop</td><td><button class="status no">✕</button></td></tr>
+
+          <tr>
+            <th>ID</th>
+            <th>Name</th>
+            <th>Pickup</th>
+            <th>Status</th>
+          </tr>
+
+          <tr>
+            <td>EMP1001</td>
+            <td>Rahul Kumar</td>
+            <td>Sainikpuri Demo Stop</td>
+            <td>
+              <button class="status yes">
+                ✓
+              </button>
+            </td>
+          </tr>
+
+          <tr>
+            <td>EMP1002</td>
+            <td>Priya Sharma</td>
+            <td>Neredmet Demo Stop</td>
+            <td>
+              <button class="status yes">
+                ✓
+              </button>
+            </td>
+          </tr>
+
+          <tr>
+            <td>EMP1003</td>
+            <td>Amit Reddy</td>
+            <td>Malkajgiri Demo Stop</td>
+            <td>
+              <button class="status no">
+                ✕
+              </button>
+            </td>
+          </tr>
+
         </table>
+
       </div>
-      <p class="small">These are fictional demonstration records, not verified real attendance.</p>
-    </div>`;
+
+      <p class="small">
+        These are fictional demonstration records,
+        not verified real attendance.
+      </p>
+
+    </div>
+
+  `;
+
 }
 
+
+/* MAP */
+
 function mapRender(){
+
   const el=document.getElementById("map");
+
   if(!el)return;
 
   const gps=document.getElementById("gps-status");
 
+
   if(!window.L){
-    if(gps)gps.textContent="Leaflet did not load. Check your internet connection and reload.";
+
+    if(gps){
+
+      gps.textContent=
+        "Leaflet did not load. Check your internet connection and reload.";
+
+    }
+
     return;
+
   }
 
-  // A new map div is created every time render() runs.
-  // Remove the previous Leaflet instance before initializing the new div.
+
+  /*
+    Remove old Leaflet instance if render()
+    created a new map element.
+  */
+
   if(map && mapElement!==el){
+
     map.remove();
+
     map=null;
+
     mapElement=null;
+
     markers={};
+
   }
+
+
+  /* CREATE MAP */
 
   if(!map){
+
     try{
-      map=L.map(el).setView([17.45,78.54],11);
+
+      map=L.map(el).setView(
+        [17.45,78.54],
+        11
+      );
+
       mapElement=el;
 
-      L.tileLayer("https://tile.openstreetmap.org/{z}/{x}/{y}.png",{
-        maxZoom:19,
-        attribution:'© <a href="https://www.openstreetmap.org/copyright">OpenStreetMap contributors</a>'
-      }).addTo(map);
+
+      L.tileLayer(
+        "https://tile.openstreetmap.org/{z}/{x}/{y}.png",
+        {
+          maxZoom:19,
+          attribution:
+            '© <a href="https://www.openstreetmap.org/copyright">OpenStreetMap contributors</a>'
+        }
+      ).addTo(map);
+
 
       map.on("tileerror",()=>{
-        const msg=document.getElementById("gps-status");
-        if(msg)msg.textContent="Map tiles failed to load. Check internet access or whether your network blocks OpenStreetMap.";
+
+        const msg=
+          document.getElementById("gps-status");
+
+        if(msg){
+
+          msg.textContent=
+            "Map tiles failed to load. Check your internet connection.";
+
+        }
+
       });
+
+
     }catch(error){
-      console.error("Map initialization error:",error);
-      if(gps)gps.textContent="Could not initialize the map. Reload the page and try again.";
+
+      console.error(
+        "Map initialization error:",
+        error
+      );
+
+      if(gps){
+
+        gps.textContent=
+          "Could not initialize the map. Reload the page and try again.";
+
+      }
+
       return;
+
     }
+
   }
 
+
   setTimeout(()=>{
-    if(map && mapElement===el)map.invalidateSize();
+
+    if(map && mapElement===el){
+
+      map.invalidateSize();
+
+    }
+
   },200);
+
 
   const bus=sel();
 
+
   if(!bus){
-    if(gps)gps.textContent="No bus records returned from Supabase.";
-    return;
-  }
 
-  if(bus.latest_latitude==null||bus.latest_longitude==null){
-    if(gps)gps.textContent="No saved GPS coordinates are available for "+(bus.bus_number||"this bus")+".";
-    return;
-  }
+    if(gps){
 
-  const point=[
-    Number(bus.latest_latitude),
-    Number(bus.latest_longitude)
-  ];
+      gps.textContent=
+        "No bus records returned from Supabase.";
 
-  if(!Number.isFinite(point[0])||!Number.isFinite(point[1])||
-     Math.abs(point[0])>90||Math.abs(point[1])>180){
-    if(gps)gps.textContent="The saved GPS coordinates are invalid.";
-    return;
-  }
-
-  try{
-    if(!markers[bus.bus_id]){
-      markers[bus.bus_id]=L.marker(point).addTo(map);
     }
 
+    return;
+
+  }
+
+
+  if(
+    bus.latest_latitude==null ||
+    bus.latest_longitude==null
+  ){
+
+    if(gps){
+
+      gps.textContent=
+        "No saved GPS coordinates are available for "+
+        (bus.bus_number||"this bus")+".";
+
+    }
+
+    return;
+
+  }
+
+
+  const point=[
+
+    Number(bus.latest_latitude),
+
+    Number(bus.latest_longitude)
+
+  ];
+
+
+  if(
+    !Number.isFinite(point[0]) ||
+    !Number.isFinite(point[1]) ||
+    Math.abs(point[0])>90 ||
+    Math.abs(point[1])>180
+  ){
+
+    if(gps){
+
+      gps.textContent=
+        "The saved GPS coordinates are invalid.";
+
+    }
+
+    return;
+
+  }
+
+
+  try{
+
+    if(!markers[bus.bus_id]){
+
+      markers[bus.bus_id]=
+        L.marker(point).addTo(map);
+
+    }
+
+
     markers[bus.bus_id]
+
       .setLatLng(point)
-      .bindPopup(
-        `<b>${esc(bus.bus_number)}</b><br>
-        GPS source: ${esc(bus.gps_source||"unknown")}<br>
-        Recorded: ${esc(bus.gps_recorded_at||"time unavailable")}`
-      );
+
+      .bindPopup(`
+
+        <b>${esc(bus.bus_number)}</b><br>
+
+        GPS source:
+        ${esc(bus.gps_source||"unknown")}<br>
+
+        Recorded:
+        ${esc(bus.gps_recorded_at||"time unavailable")}
+
+      `);
+
 
     map.setView(point,13);
 
+
     if(gps){
-      gps.textContent="Saved location for "+bus.bus_number+
-        ". Last recorded: "+(bus.gps_recorded_at||"time unavailable")+
+
+      gps.textContent=
+        "Saved location for "+
+        bus.bus_number+
+        ". Last recorded: "+
+        (bus.gps_recorded_at||"time unavailable")+
         ". Live GPS has not been verified.";
+
     }
+
+
   }catch(error){
-    console.error("Map rendering error:",error);
-    if(gps)gps.textContent="Could not display the saved bus location.";
+
+    console.error(
+      "Map rendering error:",
+      error
+    );
+
+    if(gps){
+
+      gps.textContent=
+        "Could not display the saved bus location.";
+
+    }
+
   }
+
 }
 
+
+/* LOAD BUS DASHBOARD */
+
 async function load(){
+
   if(!client){
-    status("Waiting for Supabase configuration.");
-    render();
+
+    status(
+      "Waiting for Supabase configuration."
+    );
+
     return;
+
   }
 
+
   try{
+
     const result=await client
+
       .from("bus_dashboard")
+
       .select("*")
+
       .order("bus_number");
 
+
     if(result.error){
-      status("Database error: "+result.error.message);
+
+      status(
+        "Database error: "+
+        result.error.message
+      );
+
       return;
+
     }
+
 
     rows=result.data||[];
 
-    if(!rows.some(bus=>bus.bus_id===selectedBus)){
-      selectedBus=rows[0]?.bus_id||null;
+
+    if(
+      !rows.some(
+        bus=>bus.bus_id===selectedBus
+      )
+    ){
+
+      selectedBus=
+        rows[0]?.bus_id||null;
+
     }
 
-    status(`Connected. ${rows.length} buses loaded.`,true);
+
+    status(
+      `Connected. ${rows.length} buses loaded.`,
+      true
+    );
+
+
     render();
+
+
   }catch(error){
-    console.error("Dashboard load error:",error);
-    status("Could not load dashboard data. Check your connection.");
+
+    console.error(
+      "Dashboard load error:",
+      error
+    );
+
+    status(
+      "Could not load dashboard data. Check your connection."
+    );
+
   }
+
 }
+
+
+/* SELECT BUS */
 
 function choose(id){
+
   selectedBus=id;
+
   render();
+
 }
+
+
+/* CHANGE ROLE VIEW */
+
+function changeRoleView(selectedRole){
+
+  /*
+    The user can only open the view
+    allowed for their actual role.
+  */
+
+  if(!actualUserRole){
+
+    return;
+
+  }
+
+
+  /*
+    Admin can view all role screens.
+  */
+
+  if(actualUserRole!=="admin"){
+
+    if(selectedRole!==actualUserRole){
+
+      alert(
+        "You do not have permission to open this section."
+      );
+
+      return;
+
+    }
+
+  }
+
+
+  role=selectedRole;
+
+
+  document
+    .querySelectorAll(".tabs button")
+    .forEach(button=>{
+
+      button.classList.remove("active");
+
+      if(button.dataset.role===selectedRole){
+
+        button.classList.add("active");
+
+      }
+
+    });
+
+
+  render();
+
+}
+
+
+/* ADMIN BUTTON PLACEHOLDER */
+
+function adminMessage(section){
+
+  if(actualUserRole!=="admin"){
+
+    alert(
+      "Administrator permission is required."
+    );
+
+    return;
+
+  }
+
+
+  alert(
+    section+
+    " will be connected to Supabase in the next implementation step."
+  );
+
+}
+
+
+/* DEMO */
 
 function demo(){
-  alert("Demo only. Real GPS upload requires secure driver authentication and server-side authorization.");
+
+  alert(
+    "Demo only. Real GPS upload requires secure driver authentication and server-side authorization."
+  );
+
 }
 
-document.querySelectorAll(".tabs button").forEach(button=>{
-  button.onclick=()=>{
-    role=button.dataset.role;
 
-    document.querySelectorAll(".tabs button")
-      .forEach(item=>item.classList.remove("active"));
+/* SIGN IN */
 
-    button.classList.add("active");
-    render();
-  };
-});
+async function signIn(){
 
-if(C.url&&C.key&&window.supabase){
-  client=supabase.createClient(C.url,C.key,{
-    auth:{persistSession:true,autoRefreshToken:true}
-  });
+  const email=
+    document.getElementById("loginEmail")
+      .value
+      .trim();
 
-  load();
+  const password=
+    document.getElementById("loginPassword")
+      .value;
 
-  client.channel("bus-location-live")
-    .on("postgres_changes",{
-      event:"*",
-      schema:"public",
-      table:"bus_locations"
-    },()=>load())
+  const message=
+    document.getElementById("authMessage");
+
+  const button=
+    document.getElementById("loginButton");
+
+
+  if(!email || !password){
+
+    message.textContent=
+      "Please enter your email and password.";
+
+    return;
+
+  }
+
+
+  if(!client){
+
+    message.textContent=
+      "Supabase is not connected.";
+
+    return;
+
+  }
+
+
+  button.disabled=true;
+
+  message.textContent=
+    "Signing in...";
+
+
+  try{
+
+    const {data,error}=
+      await client.auth.signInWithPassword({
+
+        email:email,
+
+        password:password
+
+      });
+
+
+    if(error){
+
+      message.textContent=
+        "Sign-in failed: "+
+        error.message;
+
+      button.disabled=false;
+
+      return;
+
+    }
+
+
+    currentUser=data.user;
+
+
+    await checkUserRole();
+
+
+  }catch(error){
+
+    console.error(
+      "Sign-in error:",
+      error
+    );
+
+    message.textContent=
+      "Unable to sign in. Please try again.";
+
+  }
+
+
+  button.disabled=false;
+
+}
+
+
+/* CHECK USER ROLE */
+
+async function checkUserRole(){
+
+  const message=
+    document.getElementById("authMessage");
+
+
+  if(!client){
+
+    return null;
+
+  }
+
+
+  const {
+    data:{user},
+    error:authError
+  }=
+    await client.auth.getUser();
+
+
+  if(
+    authError ||
+    !user
+  ){
+
+    message.textContent=
+      "You are not signed in.";
+
+    return null;
+
+  }
+
+
+  currentUser=user;
+
+
+  /*
+    Read only the role belonging
+    to the currently authenticated user.
+  */
+
+  const {
+    data,
+    error
+  }=
+    await client
+
+      .from("user_roles")
+
+      .select("role")
+
+      .eq("user_id",user.id)
+
+      .single();
+
+
+  if(error){
+
+    console.error(
+      "Role check error:",
+      error
+    );
+
+    message.textContent=
+      "Signed in, but your account role could not be verified.";
+
+    await client.auth.signOut();
+
+    return null;
+
+  }
+
+
+  actualUserRole=data.role;
+
+
+  /*
+    Start each user in their own role view.
+    Admin starts on Admin.
+  */
+
+  role=
+    actualUserRole==="admin"
+      ?"admin"
+      :actualUserRole;
+
+
+  document.getElementById("authBox")
+    .classList.add("hidden");
+
+
+  document.getElementById("userBox")
+    .classList.remove("hidden");
+
+
+  document.getElementById("protectedApp")
+    .classList.remove("hidden");
+
+
+  document.getElementById("userEmail")
+    .textContent=
+      user.email||"Signed-in user";
+
+
+  document.getElementById("userRole")
+    .textContent=
+      actualUserRole.toUpperCase();
+
+
+  message.textContent=
+    "Signed in successfully.";
+
+
+  /*
+    Set the correct tab.
+  */
+
+  document
+    .querySelectorAll(".tabs button")
+    .forEach(button=>{
+
+      button.classList.remove("active");
+
+      if(
+        button.dataset.role===role
+      ){
+
+        button.classList.add("active");
+
+      }
+
+    });
+
+
+  status(
+    "Signed in as "+
+    user.email+
+    " ("+
+    actualUserRole+
+    ").",
+    true
+  );
+
+
+  await load();
+
+
+  return actualUserRole;
+
+}
+
+
+/* SIGN OUT */
+
+async function signOut(){
+
+  if(!client){
+
+    return;
+
+  }
+
+
+  const {error}=
+    await client.auth.signOut();
+
+
+  if(error){
+
+    alert(
+      "Sign out failed: "+
+      error.message
+    );
+
+    return;
+
+  }
+
+
+  currentUser=null;
+
+  actualUserRole=null;
+
+  role="employee";
+
+  selectedBus=null;
+
+  rows=[];
+
+
+  document.getElementById("authBox")
+    .classList.remove("hidden");
+
+
+  document.getElementById("userBox")
+    .classList.add("hidden");
+
+
+  document.getElementById("protectedApp")
+    .classList.add("hidden");
+
+
+  document.getElementById("loginPassword")
+    .value="";
+
+
+  document.getElementById("authMessage")
+    .textContent=
+      "You have been signed out.";
+
+
+  if(map){
+
+    map.remove();
+
+    map=null;
+
+    mapElement=null;
+
+    markers={};
+
+  }
+
+}
+
+
+/* AUTH SESSION CHECK */
+
+async function checkExistingSession(){
+
+  if(!client){
+
+    return;
+
+  }
+
+
+  try{
+
+    const {
+      data:{session}
+    }=
+      await client.auth.getSession();
+
+
+    if(session){
+
+      await checkUserRole();
+
+    }
+
+  }catch(error){
+
+    console.error(
+      "Session check error:",
+      error
+    );
+
+  }
+
+}
+
+
+/* AUTH STATE LISTENER */
+
+function setupAuthListener(){
+
+  if(!client){
+
+    return;
+
+  }
+
+
+  client.auth.onAuthStateChange(
+    async(event,session)=>{
+
+      console.log(
+        "Auth event:",
+        event
+      );
+
+
+      if(
+        event==="SIGNED_OUT"
+      ){
+
+        return;
+
+      }
+
+
+      if(
+        event==="SIGNED_IN" &&
+        session
+      ){
+
+        /*
+          Do not expose admin functions
+          until the database role is verified.
+        */
+
+        await checkUserRole();
+
+      }
+
+    }
+  );
+
+}
+
+
+/* INITIALIZE SUPABASE */
+
+if(
+  C.url &&
+  C.key &&
+  window.supabase
+){
+
+  client=
+    supabase.createClient(
+      C.url,
+      C.key,
+      {
+        auth:{
+          persistSession:true,
+          autoRefreshToken:true,
+          detectSessionInUrl:true
+        }
+      }
+    );
+
+
+  /*
+    Check whether the browser
+    already has a valid session.
+  */
+
+  checkExistingSession();
+
+
+  /*
+    Listen for login/logout events.
+  */
+
+  setupAuthListener();
+
+
+  /*
+    Realtime bus-location updates.
+  */
+
+  client
+
+    .channel("bus-location-live")
+
+    .on(
+      "postgres_changes",
+      {
+        event:"*",
+        schema:"public",
+        table:"bus_locations"
+      },
+      ()=>{
+
+        if(actualUserRole){
+
+          load();
+
+        }
+
+      }
+    )
+
     .subscribe();
 
+
+  /*
+    Refresh dashboard every 15 seconds.
+  */
+
   if(!refreshTimer){
-    refreshTimer=setInterval(load,15000);
+
+    refreshTimer=
+      setInterval(
+        ()=>{
+          if(actualUserRole){
+            load();
+          }
+        },
+        15000
+      );
+
   }
+
+
 }else{
-  status("Waiting for Supabase configuration.");
-  render();
+
+  status(
+    "Waiting for Supabase configuration."
+  );
+
 }
+
 </script>
+
 </body>
 </html>
+```
